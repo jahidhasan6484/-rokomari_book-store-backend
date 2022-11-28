@@ -24,8 +24,10 @@ app.get('/bookDB', (req, res) => {
 });
 
 app.post('/addBook', (req, res) => {
-    console.log(req.body)
-    res.send("SUCK SEX")
+    const newBook = req.body;
+    newBook.id = bookDB.length + 1;
+    bookDB.push(newBook)
+    res.send(newBook)
 })
 
 app.listen(port, () => {
