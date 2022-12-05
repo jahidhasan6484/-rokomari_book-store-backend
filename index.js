@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 
 //User : arabian
 // Password: f1JCyqmBNy3EAgQQ
@@ -22,44 +23,39 @@ async function run() {
         await client.connect();
 
         const all_books_collection = client.db("rokomari").collection("all_books");
-        const book = {
-            name: "Think in a Redux Way",
-            author : "Sumit Saha"
-        }
-        const result = await all_books_collection.insertOne(book);
-        console.log("AAAA", result.insertedId)
+
+        app.post('/addBook', async (req, res) => {
+            const newBook = req.body;
+            const result = await all_books_collection.insertOne(newBook);
+            res.send(result)
+        });
+
+        app.get('/bookDB', async (req, res) => {
+            const query = {};
+
+            const cursor = all_books_collection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        });
+
+        app.delete('/book/:d_id', async (req, res) => {
+            const id = req.params.d_id;
+            const query = { _id: ObjectId(id) }
+            const result = await all_books_collection.deleteOne(query);
+            res.send(result)
+        })
+
+
     }
     finally {
         // await client.close();
     }
-    
+
 }
 
 run().catch(console.dir)
 
 
-const bookDB = [
-    {
-        id: 1, name: "One", price: 120
-    },
-    {
-        id: 2, name: "Two", price: 90
-    },
-    {
-        id: 3, name: "Three", price: 95
-    }
-]
-
-app.get('/bookDB', (req, res) => {
-    res.send(bookDB)
-});
-
-app.post('/addBook', (req, res) => {
-    const newBook = req.body;
-    newBook.id = bookDB.length + 1;
-    bookDB.push(newBook)
-    res.send(newBook)
-})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
