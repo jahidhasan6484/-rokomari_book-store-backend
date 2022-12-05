@@ -3,8 +3,8 @@ const cors = require('cors');
 const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-//User : rokomari
-// Password: IA2sK2i1bIiA9722
+//User : arabian
+// Password: f1JCyqmBNy3EAgQQ
 
 app.use(cors());
 app.use(express.json())
@@ -12,14 +12,30 @@ app.use(express.json())
 const port = process.env.PORT || 5000;
 
 
-const uri = "mongodb+srv://rokomari:IA2sK2i1bIiA9722@cluster0.j3ujg.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://arabian:f1JCyqmBNy3EAgQQ@cluster0.j3ujg.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-  const collection = client.db("rokomari").collection("all_books");
-  console.log("DB CONNECTED")
-  // perform actions on the collection object
-  client.close();
-});
+
+
+async function run() {
+
+    try {
+        await client.connect();
+
+        const all_books_collection = client.db("rokomari").collection("all_books");
+        const book = {
+            name: "Think in a Redux Way",
+            author : "Sumit Saha"
+        }
+        const result = await all_books_collection.insertOne(book);
+        console.log("AAAA", result.insertedId)
+    }
+    finally {
+        // await client.close();
+    }
+    
+}
+
+run().catch(console.dir)
 
 
 const bookDB = [
