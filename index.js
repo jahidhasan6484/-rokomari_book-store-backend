@@ -38,7 +38,30 @@ async function run() {
             res.send(result)
         });
 
-        app.delete('/book/:d_id', async (req, res) => {
+        app.get('/book/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await all_books_collection.findOne(query);
+            res.send(result)
+        });
+
+        app.put('/update/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedBook = req.body;
+
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    name: updatedBook.name,
+                    price: updatedBook.price
+                },
+            };
+            const result = await all_books_collection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
+        app.delete('/delete/:d_id', async (req, res) => {
             const id = req.params.d_id;
             const query = { _id: ObjectId(id) }
             const result = await all_books_collection.deleteOne(query);
