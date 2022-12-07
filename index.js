@@ -23,7 +23,6 @@ async function run() {
         app.post('/addBook', async (req, res) => {
             const newBook = req.body;
             const result = await all_books_collection.insertOne(newBook);
-            const admin = await adminCollection.insertOne({email: "jahidhasanjuyel.01@gmail.com"});
             res.send(result)
         });
 
