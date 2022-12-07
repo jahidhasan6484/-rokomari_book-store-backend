@@ -18,10 +18,20 @@ async function run() {
         await client.connect();
 
         const all_books_collection = client.db("rokomari").collection("all_books");
+        const adminCollection = client.db("rokomari").collection("admins");
 
         app.post('/addBook', async (req, res) => {
             const newBook = req.body;
             const result = await all_books_collection.insertOne(newBook);
+            const admin = await adminCollection.insertOne({email: "jahidhasanjuyel.01@gmail.com"});
+            res.send(result)
+        });
+
+        app.get('/admins', async (req, res) => {
+            const query = {};
+
+            const cursor = adminCollection.find(query);
+            const result = await cursor.toArray();
             res.send(result)
         });
 
@@ -62,18 +72,12 @@ async function run() {
             const result = await all_books_collection.deleteOne(query);
             res.send(result)
         })
-
-
     }
     finally {
         // await client.close();
     }
-
 }
-
 run().catch(console.dir)
-
-
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
