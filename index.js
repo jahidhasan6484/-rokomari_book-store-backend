@@ -88,10 +88,10 @@ async function run() {
                 total_amount: order.price,
                 currency: 'BDT',
                 tran_id: transaction_id, // use unique tran_id for each api call
-                success_url: `http://localhost:${port}/payment/success?transaction_id=${transaction_id}`,
-                fail_url: `http://localhost:${port}/payment/fail?transaction_id=${transaction_id}`,
-                cancel_url: `http://localhost:${port}/payment/cancel`,
-                ipn_url: `http://localhost:${port}/payment/ipn`,
+                success_url: `${process.env.BACKEND_URL}/payment/success?transaction_id=${transaction_id}`,
+                fail_url: `${process.env.BACKEND_URL}/payment/fail?transaction_id=${transaction_id}`,
+                cancel_url: `${process.env.BACKEND_URL}/payment/cancel`,
+                ipn_url: `${process.env.BACKEND_URL}/payment/ipn`,
                 shipping_method: 'Courier',
                 product_name: 'Computer.',
                 product_category: 'Electronic',
@@ -144,8 +144,7 @@ async function run() {
             const result = await orderCollection.updateOne(filter, updatedDoc, options);
 
             if (result.modifiedCount > 0) {
-
-                res.redirect(`http://localhost:3000/payment/success?transaction_id=${transaction_id}`)
+                res.redirect(`${process.env.FRONTEND_URL}/payment/success?transaction_id=${transaction_id}`)
             }
         });
 
@@ -154,15 +153,12 @@ async function run() {
             const { transaction_id } = req.query;
 
             const filter = { transaction_id: transaction_id };
-
             const result = await orderCollection.deleteOne(filter);
-        
 
-
-            res.redirect("http://localhost:3000/payment/fail")
-
-
-        })
+            if (result.deletedCount) {
+                res.redirect(`${process.env.FRONTEND_URL}/payment/fail`)
+            }
+        });
 
         app.get('/orders/by-transaction-id/:id', async (req, res) => {
             const id = req.params.id;
@@ -170,7 +166,7 @@ async function run() {
             const result = await orderCollection.findOne(query);
 
             res.send(result)
-        })
+        });
 
 
     }
