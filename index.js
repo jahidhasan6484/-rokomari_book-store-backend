@@ -55,6 +55,15 @@ async function run() {
             res.send(result)
         });
 
+        app.get('/suggestion/:categ', async (req, res) => {
+            const categ = req.params.categ;
+            const query = { category: categ };
+
+            const cursor = all_books_collection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        });
+
         app.put('/update/:id', async (req, res) => {
             const id = req.params.id;
             const updatedBook = req.body;
@@ -87,7 +96,7 @@ async function run() {
             const data = {
                 total_amount: order.totalCharge,
                 book_price: order.bookPrice,
-                courier_charge : order.courierCharge,
+                courier_charge: order.courierCharge,
                 currency: 'BDT',
                 tran_id: transaction_id, // use unique tran_id for each api call
                 success_url: `${process.env.BACKEND_URL}/payment/success?transaction_id=${transaction_id}`,
