@@ -178,7 +178,14 @@ async function run() {
             res.send(result)
         });
 
+        app.get('/orders/by-email/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const cursor = orderCollection.find(query);
+            const result = await cursor.toArray();
 
+            res.send(result)
+        });
     }
     finally {
         // await client.close();
